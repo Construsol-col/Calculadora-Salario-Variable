@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Variable — Construsol 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F5F5F3;min-height:100vh;padding:1rem;color:#1A1A1A}
+.app{max-width:460px;margin:0 auto;padding-bottom:2rem}
+.card{background:#fff;border:0.5px solid #E5E5E5;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555;margin-bottom:14px;background:#F0F0EE;padding:5px 10px;border-radius:6px;display:inline-block}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #F0F0F0;font-size:14px;color:#888}
+.row:last-child{border-bottom:none}
+.row-val{font-weight:500;color:#1A1A1A}
+.total-card{background:#fff;border:0.5px solid #E5E5E5;border-radius:12px;padding:1.5rem 1.25rem;margin-bottom:12px;text-align:center}
+.total-label{font-size:12px;color:#888;margin-bottom:6px;font-weight:500}
+.total-val{font-size:42px;font-weight:500;color:#1A1A1A;line-height:1}
+.total-sub{font-size:12px;color:#888;margin-top:8px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi{background:#F9F9F9;border-radius:8px;padding:12px 14px}
+.kpi-label{font-size:11px;color:#888;margin-bottom:4px;font-weight:500}
+.kpi-val{font-size:18px;font-weight:500;color:#1A1A1A}
+button{cursor:pointer;font-family:inherit}
+.btn{width:100%;padding:11px;border-radius:8px;font-size:14px;font-weight:500;border:0.5px solid #DDD;background:#fff;color:#1A1A1A;display:block;text-align:center;margin-bottom:8px}
+.btn:hover{background:#F5F5F5}
+.btn-primary{background:#E8682A;border-color:#E8682A;color:#fff}
+.btn-primary:hover{opacity:.9}
+.btn-sm{padding:8px 14px;font-size:13px;display:inline-block;width:auto;margin:0}
+input[type=text],input[type=number],input[type=password],select{width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid #DDD;background:#fff;color:#1A1A1A;font-size:14px;font-family:inherit;outline:none}
+input:focus,select:focus{border-color:#E8682A}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.tag-green{background:#EAF3DE;color:#3B6D11}
+.tag-amber{background:#FAEEDA;color:#854F0B}
+.tag-red{background:#FCEBEB;color:#A32D2D}
+.tag-blue{background:#E3F2FD;color:#0C447C}
+.tag-gray{background:#F0F0F0;color:#666;border:0.5px solid #DDD}
+.alert{background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:10px 14px;font-size:13px;color:#791F1F;margin-bottom:12px;text-align:center;font-weight:500}
+.venta-item{background:#F9F9F9;border-radius:8px;padding:11px 14px;margin-bottom:8px;position:relative}
+.venta-del{position:absolute;top:10px;right:12px;cursor:pointer;font-size:18px;color:#AAA;line-height:1;background:none;border:none;padding:0}
+.venta-del:hover{color:#E8682A}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-label{font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.hint{font-size:12px;color:#888;margin-bottom:10px}
+.divider{height:0.5px;background:#F0F0F0;margin:4px 0}
+.empty{text-align:center;padding:16px 0;color:#AAA;font-size:13px}
+.pin-wrap{display:flex;gap:10px;justify-content:center;margin:1.25rem 0}
+.pin-box{width:54px;height:58px;border-radius:8px;border:0.5px solid #DDD;background:#F9F9F9;font-size:22px;font-weight:500;text-align:center;color:#1A1A1A;outline:none;font-family:inherit}
+.pin-box:focus{border-color:#E8682A;background:#fff}
+.header-bar{background:#E8682A;border-radius:12px;padding:14px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.header-name{font-size:15px;font-weight:500;color:#fff;margin-bottom:2px}
+.header-sub{font-size:12px;color:#FAD7C0}
+.avatar{width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#E8682A;flex-shrink:0}
+.logo-sq{width:52px;height:52px;border-radius:14px;background:#E8682A;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.logo-sq span{font-size:22px;font-weight:600;color:#fff}
+.back{font-size:13px;color:#888;cursor:pointer;display:inline-block;margin-bottom:12px;background:none;border:none;padding:0;font-family:inherit}
+.asesor-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:8px;border:0.5px solid #E5E5E5;background:#fff;cursor:pointer;width:100%;margin-bottom:8px;text-align:left;font-family:inherit}
+.asesor-btn:hover{background:#F9F9F9}
+.asesor-init{width:36px;height:36px;border-radius:50%;background:#FAD7C0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#E8682A;flex-shrink:0}
+.asesor-name{font-size:14px;font-weight:500;color:#1A1A1A}
+.asesor-role{font-size:12px;color:#888;margin-top:1px}
+.rec-box{background:#F9F9F9;border-radius:8px;padding:14px;margin-bottom:10px}
+.rec-factor{font-size:22px;font-weight:500;margin:4px 0}
+.rec-desc{font-size:12px;color:#888}
+.admin-link{font-size:12px;color:#888;cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;padding:0}
+.modal-overlay{background:rgba(0,0,0,.5);border-radius:12px;padding:2rem 1rem;display:flex;align-items:center;justify-content:center;min-height:200px;margin-bottom:12px}
+.modal-box{background:#fff;border:0.5px solid #E5E5E5;border-radius:12px;padding:1.5rem;width:100%;max-width:300px}
+.err{font-size:12px;color:#A32D2D;text-align:center;min-height:16px;margin-top:4px}
+.admin-panel{border:1.5px solid #E8682A;border-radius:12px;padding:1.25rem;margin-bottom:12px;background:#FDF0E8}
+.breakdown-last{background:#FDF0E8;margin:0 -2px;padding:10px 2px;border-radius:4px}
+.ind-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:#E3F2FD;color:#0C447C;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="s0">
+  <div style="text-align:center;padding:2rem 0 1rem">
+    <div class="logo-sq"><span>C</span></div>
+    <div style="font-size:20px;font-weight:500">Construsol</div>
+    <div style="font-size:13px;color:#888;margin-top:4px">Calculadora de salario variable 2026</div>
+  </div>
+  <div class="card">
+    <div class="label">Selecciona tu nombre</div>
+    <div id="asesorBtns"></div>
+  </div>
+</div>
+
+<div id="s1" style="display:none">
+  <button class="back" id="b01">← Volver</button>
+  <div class="card" style="text-align:center">
+    <div style="font-size:15px;font-weight:500;margin-bottom:4px" id="pinName"></div>
+    <div style="font-size:13px;color:#888">Ingresa tu PIN de 4 dígitos</div>
+    <div class="pin-wrap">
+      <input class="pin-box" id="p0" maxlength="1" type="password" inputmode="numeric" oninput="pinInput(0)">
+      <input class="pin-box" id="p1" maxlength="1" type="password" inputmode="numeric" oninput="pinInput(1)">
+      <input class="pin-box" id="p2" maxlength="1" type="password" inputmode="numeric" oninput="pinInput(2)">
+      <input class="pin-box" id="p3" maxlength="1" type="password" inputmode="numeric" oninput="pinInput(3)">
+    </div>
+    <div id="pinErr" class="err"></div>
+  </div>
+</div>
+
+<div id="s2" style="display:none">
+  <button class="back" id="b12">← Cerrar sesión</button>
+  <div class="header-bar">
+    <div><div class="header-name" id="appName"></div><div class="header-sub" id="appSub"></div></div>
+    <div class="avatar" id="appAvatar"></div>
+  </div>
+  <div class="total-card">
+    <div class="total-label">Variable mensual estimado</div>
+    <div class="total-val" id="totalVal">—</div>
+    <div class="total-sub" id="totalSub">Registra tus ventas para calcular</div>
+    <div style="font-size:11px;color:#AAA;margin-top:8px;font-style:italic">* Valor estimado. La liquidación oficial la realiza la administración.</div>
+  </div>
+  <div id="blockedAlert" class="alert" style="display:none">Comp. Venta: cumplimiento menor al 85% — no comisiona por ventas este mes</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Comp. venta</div>
+      <div class="kpi-val" id="kvVenta">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Comp. recaudo <span class="ind-badge">Independiente</span></div>
+      <div class="kpi-val" id="kvRec">—</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="label">Mis ventas del mes</div>
+    <div id="ventasList"></div>
+    <button class="btn" onclick="addVenta()">+ Agregar venta</button>
+    <div id="addVentaForm" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid #F0F0F0">
+      <div class="grid2" style="margin-bottom:10px">
+        <div>
+          <div class="form-label">Familia de producto</div>
+          <select id="vFamilia" onchange="updateBolsaPreview()"><option value="">Selecciona...</option></select>
+        </div>
+        <div>
+          <div class="form-label">Bolsa detectada</div>
+          <div id="bolsaPreview" style="padding:10px 12px;border-radius:8px;background:#F9F9F9;font-size:13px;font-weight:600;color:#888;min-height:40px;display:flex;align-items:center">—</div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-bottom:10px">
+        <div><div class="form-label">Valor venta ($)</div><input type="number" id="vValor" placeholder="ej. 5000000" oninput="calcVenta()"></div>
+        <div><div class="form-label">Utilidad bruta ($)</div><input type="number" id="vUtilidad" placeholder="ej. 1100000" oninput="calcVenta()"></div>
+      </div>
+      <div style="background:#F9F9F9;border-radius:8px;padding:10px 12px;font-size:13px;color:#888;margin-bottom:12px">
+        Margen: <strong id="vMargenCalc" style="color:#1A1A1A">—</strong>
+        <span style="margin:0 8px;opacity:.3">|</span>
+        Factor margen: <strong id="vFactorCalc" style="color:#E8682A">—</strong>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="saveVenta()">Guardar</button>
+        <button class="btn btn-sm" onclick="cancelVenta()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="label">Cumplimiento de meta</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <div style="font-size:13px;color:#888;flex:1">Presupuesto del mes ($)</div>
+      <input type="number" id="pptoInput" style="width:160px;text-align:right" oninput="calc()">
+    </div>
+    <div class="hint">Aplica solo al Componente Venta.</div>
+    <div class="divider"></div>
+    <div class="row"><span>Total ventas registradas</span><span class="row-val" id="totalVentasLbl">$0</span></div>
+    <div class="row"><span>Cumplimiento de meta</span><span class="row-val" id="cumplLbl">—</span></div>
+    <div class="row"><span>Factor venta</span><span class="row-val" id="fvLbl">—</span></div>
+  </div>
+  <div class="card">
+    <div class="label">Factor de recaudo <span class="ind-badge">Independiente</span></div>
+    <div class="rec-box">
+      <div style="font-size:12px;color:#888;margin-bottom:4px;font-weight:500">Factor Oportunidad cargado por el administrador</div>
+      <div class="rec-factor" id="recFactorDisplay">Pendiente</div>
+      <div class="rec-desc" id="recFactorDesc">El administrador aún no ha cargado el factor de este mes.</div>
+    </div>
+    <div style="text-align:right"><button class="admin-link" onclick="showAdminModal()">¿Eres admin? Cargar factor</button></div>
+  </div>
+  <div style="background:#FFFDE7;border:0.5px solid #FFF176;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#F57F17;line-height:1.6">
+    <strong>(*) Valor estimado</strong> — Los resultados de esta calculadora son aproximados y dependen de los datos ingresados manualmente. El cálculo oficial y definitivo lo realiza la administración con base en SAP y BI. Si encuentras una diferencia con tu liquidación oficial, tienes <strong>3 días hábiles</strong> desde que recibes el reporte para notificarla a la Administración Comercial.
+  </div>
+  <div class="card">
+    <div class="label">Detalle del cálculo</div>
+    <div id="breakdown"></div>
+  </div>
+</div>
+
+<div id="adminModalWrap" style="display:none">
+  <div class="modal-overlay">
+    <div class="modal-box">
+      <div style="font-size:15px;font-weight:500;text-align:center;margin-bottom:4px">Acceso administrador</div>
+      <div style="font-size:13px;color:#888;text-align:center;margin-bottom:16px">Clave para cargar el Factor Oportunidad</div>
+      <input type="password" id="adminPwdInput" placeholder="Clave de administrador" style="margin-bottom:6px" onkeydown="if(event.key==='Enter')checkAdminPwd()">
+      <div class="err" id="adminPwdErr"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-primary btn-sm" style="flex:1;display:block" onclick="checkAdminPwd()">Entrar</button>
+        <button class="btn btn-sm" style="flex:1;display:block" onclick="closeAdminModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="adminPanelWrap" style="display:none">
+  <div class="admin-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;color:#E8682A">Modo administrador</div>
+      <button onclick="closeAdminPanel()" style="font-size:12px;color:#888;background:none;border:none;cursor:pointer;font-family:inherit">Cerrar ×</button>
+    </div>
+    <div class="hint">Ingresa el Factor Oportunidad ya calculado del Excel Maestro → pestaña "Factor Oportunidad" → columna H del asesor.</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="number" id="recInput" min="0" max="1" step="0.0001" placeholder="ej. 0.8750" style="flex:1">
+      <button class="btn btn-primary btn-sm" onclick="saveRec()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const ADMIN_PWD="2026*";
+const ASESORES=[
+  {nombre:"Laura Velásquez",  varObj:1600000,ppto:216318233,pin:"1234"},
+  {nombre:"Jose Guerrero",    varObj:2300000,ppto:309915500,pin:"2345"},
+  {nombre:"Juan E. Sintura",  varObj:3800000,ppto:511098390,pin:"3456"},
+  {nombre:"Lucía Ricardo",    varObj:3600000,ppto:486541667,pin:"4567"},
+  {nombre:"Punto de Venta",   varObj:700000, ppto:92681000, pin:"5678"},
+];
+const FAMILIAS=[
+  {nombre:"Juntas",bolsa:1,minM:15},{nombre:"Sellos",bolsa:1,minM:15},{nombre:"Instalaciones",bolsa:1,minM:15},
+  {nombre:"Fibras sintéticas",bolsa:2,minM:25},{nombre:"Fibras asfálticas",bolsa:2,minM:25},
+  {nombre:"Aditivos",bolsa:3,minM:18},{nombre:"Enfilajes",bolsa:3,minM:18},{nombre:"Fibra metálica",bolsa:3,minM:18},
+  {nombre:"Dren",bolsa:3,minM:18},{nombre:"Productos MC",bolsa:3,minM:18},
+  {nombre:"Química especializada",bolsa:3,minM:18},{nombre:"Endurecedor",bolsa:3,minM:18},
+  {nombre:"Membranas",bolsa:3,minM:18},{nombre:"Complementarios concretos",bolsa:3,minM:18},
+  {nombre:"Pernos",bolsa:4,minM:10},{nombre:"Tubería corta",bolsa:4,minM:10},
+];
+const BNOMBRES=["","Contratos","Fibras","Resto portafolio","Baja rotación"];
+
+// NEW 5-tramo FM tables
+const FM={
+  1:[[15,0],[18,0.3],[21,0.7],[24,1.0],[999,1.2]],
+  2:[[25,0],[28,0.3],[31,0.7],[34,1.0],[999,1.2]],
+  3:[[18,0],[21,0.3],[24,0.7],[27,1.0],[999,1.2]],
+};
+function getFM(bolsa,margen){
+  for(const [lim,f] of FM[bolsa]) if(margen<lim) return f;
+  return FM[bolsa].slice(-1)[0][1];
+}
+function getFV(c){if(c<85)return 0;if(c<=90)return.6;if(c<=95)return.8;if(c<=110)return 1;return 1.15}
+function fmt(n){return"$"+Math.round(n).toLocaleString("es-CO")}
+function ini(n){return n.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}
+
+let asesor=null,ventas=[],recFactor=null;
+function show(id){["s0","s1","s2"].forEach(s=>document.getElementById(s).style.display=s===id?"block":"none")}
+
+function initLogin(){
+  document.getElementById("asesorBtns").innerHTML=ASESORES.map((a,i)=>`
+    <button class="asesor-btn" onclick="goPin(${i})">
+      <div class="asesor-init">${ini(a.nombre)}</div>
+      <div><div class="asesor-name">${a.nombre}</div><div class="asesor-role">Asesor comercial</div></div>
+    </button>`).join('');
+  const sel=document.getElementById("vFamilia");
+  sel.innerHTML='<option value="">Selecciona familia...</option>'+FAMILIAS.map(f=>`<option value="${f.nombre}">${f.nombre}</option>`).join('');
+}
+function goPin(i){
+  asesor=ASESORES[i];
+  document.getElementById("pinName").textContent=asesor.nombre;
+  ["p0","p1","p2","p3"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("pinErr").textContent="";
+  show("s1");setTimeout(()=>document.getElementById("p0").focus(),100);
+}
+function pinInput(i){
+  const boxes=["p0","p1","p2","p3"];
+  const v=document.getElementById(boxes[i]).value.replace(/\D/g,"");
+  document.getElementById(boxes[i]).value=v;
+  if(v&&i<3)document.getElementById(boxes[i+1]).focus();
+  if(i===3||document.getElementById(boxes[3]).value)checkPin();
+}
+function checkPin(){
+  const pin=["p0","p1","p2","p3"].map(id=>document.getElementById(id).value).join("");
+  if(pin.length<4)return;
+  if(pin===asesor.pin){
+    ventas=[];recFactor=null;
+    document.getElementById("appName").textContent=asesor.nombre;
+    document.getElementById("appSub").textContent="Ppto: "+fmt(asesor.ppto);
+    document.getElementById("appAvatar").textContent=ini(asesor.nombre);
+    document.getElementById("pptoInput").value=asesor.ppto;
+    document.getElementById("adminModalWrap").style.display="none";
+    document.getElementById("adminPanelWrap").style.display="none";
+    renderVentas();updateRecDisplay();calc();show("s2");
+  } else {
+    document.getElementById("pinErr").textContent="PIN incorrecto.";
+    ["p0","p1","p2","p3"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("p0").focus();
+  }
+}
+document.getElementById("b01").onclick=()=>show("s0");
+document.getElementById("b12").onclick=()=>{asesor=null;ventas=[];recFactor=null;document.getElementById("adminModalWrap").style.display="none";document.getElementById("adminPanelWrap").style.display="none";show("s0")};
+function showAdminModal(){document.getElementById("adminPwdInput").value="";document.getElementById("adminPwdErr").textContent="";document.getElementById("adminModalWrap").style.display="block";setTimeout(()=>document.getElementById("adminPwdInput").focus(),100)}
+function closeAdminModal(){document.getElementById("adminModalWrap").style.display="none"}
+function checkAdminPwd(){
+  const pwd=document.getElementById("adminPwdInput").value;
+  if(pwd===ADMIN_PWD){document.getElementById("adminModalWrap").style.display="none";document.getElementById("adminPanelWrap").style.display="block";document.getElementById("recInput").value=recFactor!==null?recFactor.toFixed(4):"";setTimeout(()=>document.getElementById("recInput").focus(),100)}
+  else{document.getElementById("adminPwdErr").textContent="Clave incorrecta.";document.getElementById("adminPwdInput").value="";document.getElementById("adminPwdInput").focus()}
+}
+function closeAdminPanel(){document.getElementById("adminPanelWrap").style.display="none"}
+function saveRec(){
+  const v=parseFloat(document.getElementById("recInput").value);
+  if(isNaN(v)||v<0||v>1){alert("El factor debe estar entre 0 y 1 (ej. 0.875). Viene del Excel Maestro → Factor Oportunidad → columna H.");return}
+  recFactor=Math.round(v*10000)/10000;
+  document.getElementById("adminPanelWrap").style.display="none";
+  updateRecDisplay();calc();
+}
+function updateRecDisplay(){
+  const el=document.getElementById("recFactorDisplay");
+  const desc=document.getElementById("recFactorDesc");
+  if(recFactor===null){el.textContent="Pendiente";el.style.color="#888";desc.textContent="El administrador aún no ha cargado el factor de este mes.";return}
+  el.textContent=recFactor.toFixed(4);
+  el.style.color=recFactor>=0.9?"#3B6D11":recFactor>=0.6?"#854F0B":recFactor>0?"#E8682A":"#A32D2D";
+  const pct=Math.round(recFactor*100);
+  desc.textContent=recFactor>=1.0?`Excelente — factor ${recFactor.toFixed(2)}, capturas el 100%+ del componente recaudo`:
+                   recFactor>=0.7?`Bien — factor ${recFactor.toFixed(2)}, capturas el ${pct}% aprox. del componente`:
+                   recFactor>0?`Regular — factor ${recFactor.toFixed(2)}, bajo por mora en cartera`:
+                   `Sin comisión de recaudo este mes`;
+}
+function addVenta(){
+  document.getElementById("addVentaForm").style.display="block";
+  ["vFamilia","vValor","vUtilidad"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("vMargenCalc").textContent="—";
+  document.getElementById("vFactorCalc").textContent="—";
+  const p=document.getElementById("bolsaPreview");p.textContent="—";p.style.color="#888";
+}
+function updateBolsaPreview(){
+  const f=FAMILIAS.find(x=>x.nombre===document.getElementById("vFamilia").value);
+  const p=document.getElementById("bolsaPreview");
+  if(f){p.textContent="Bolsa "+f.bolsa+" — "+BNOMBRES[f.bolsa];const clrs=["","#0C447C","#3B6D11","#854F0B","#5F5E5A"];p.style.color=clrs[f.bolsa]}
+  else{p.textContent="—";p.style.color="#888"}
+  calcVenta();
+}
+function calcVenta(){
+  const valor=parseFloat(document.getElementById("vValor").value)||0;
+  const util=parseFloat(document.getElementById("vUtilidad").value)||0;
+  const f=FAMILIAS.find(x=>x.nombre===document.getElementById("vFamilia").value);
+  if(valor>0&&f){
+    const m=util/valor*100;
+    document.getElementById("vMargenCalc").textContent=m.toFixed(1)+"%";
+    if(f.bolsa<4){
+      const fm=getFM(f.bolsa,m);
+      document.getElementById("vFactorCalc").textContent=fm===0?"0 — No comisiona":fm.toFixed(1);
+      document.getElementById("vFactorCalc").style.color=fm>=1?"#3B6D11":fm>=0.7?"#854F0B":fm>0?"#E8682A":"#A32D2D";
+    } else {
+      document.getElementById("vFactorCalc").textContent="Bono especial (B4)";
+      document.getElementById("vFactorCalc").style.color="#5F5E5A";
+    }
+  }
+}
+function saveVenta(){
+  const familia=document.getElementById("vFamilia").value;
+  const valor=parseFloat(document.getElementById("vValor").value)||0;
+  const util=parseFloat(document.getElementById("vUtilidad").value)||0;
+  if(!familia||valor<=0){alert("Completa la familia y el valor.");return}
+  const f=FAMILIAS.find(x=>x.nombre===familia);
+  const margen=valor>0?util/valor*100:0;
+  const fm=f.bolsa<4?getFM(f.bolsa,margen):null;
+  ventas.push({familia,bolsa:f.bolsa,valor,util,margen,fm});
+  document.getElementById("addVentaForm").style.display="none";
+  renderVentas();calc();
+}
+function cancelVenta(){document.getElementById("addVentaForm").style.display="none"}
+function deleteVenta(i){ventas.splice(i,1);renderVentas();calc()}
+const BTAGS=["","tag-blue","tag-green","tag-amber","tag-gray"];
+function renderVentas(){
+  const el=document.getElementById("ventasList");
+  if(!ventas.length){el.innerHTML='<div class="empty">Sin ventas registradas aún</div>';return}
+  el.innerHTML=ventas.map((v,i)=>`<div class="venta-item">
+    <button class="venta-del" onclick="deleteVenta(${i})">×</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;padding-right:24px">
+      <span style="font-size:13px;font-weight:500">${v.familia}</span>
+      <span class="tag ${BTAGS[v.bolsa]}">Bolsa ${v.bolsa}</span>
+      ${v.fm!==null?(v.fm===0?'<span class="tag tag-red">FM 0 — No comisiona</span>':`<span class="tag ${v.fm>=1?'tag-green':v.fm>=0.7?'tag-amber':'tag-red'}">FM ${v.fm.toFixed(1)}</span>`):'<span class="tag tag-gray">Bono B4</span>'}
+    </div>
+    <div style="display:flex;gap:14px;font-size:12px;color:#888">
+      <span>Venta: <strong style="color:#1A1A1A">${fmt(v.valor)}</strong></span>
+      <span>Margen: <strong style="color:#1A1A1A">${v.margen.toFixed(1)}%</strong></span>
+    </div>
+  </div>`).join('');
+}
+function calc(){
+  if(!asesor)return;
+  const ppto=parseFloat(document.getElementById("pptoInput").value)||asesor.ppto;
+  const totalVenta=ventas.reduce((s,v)=>s+v.valor,0);
+  const cumpl=ppto>0?totalVenta/ppto*100:0;
+  const fv=getFV(cumpl);
+  const blocked=fv===0&&ventas.length>0;
+
+  document.getElementById("totalVentasLbl").textContent=fmt(totalVenta);
+  document.getElementById("cumplLbl").innerHTML=ventas.length?`<span>${Math.round(cumpl*10)/10}%</span>`:'<span>—</span>';
+  document.getElementById("fvLbl").innerHTML=ventas.length?`<span class="tag ${fv===0?'tag-red':fv<1?'tag-amber':'tag-green'}" style="font-size:13px">${fv.toFixed(2)}</span>`:'<span>—</span>';
+
+  // FM ponderado — only non-zero FM ventas
+  const vm=ventas.filter(v=>v.bolsa<4&&v.fm!==null&&v.fm>0);
+  const tm=vm.reduce((s,v)=>s+v.valor,0);
+  let fmP=0;
+  if(tm>0)vm.forEach(v=>fmP+=v.fm*(v.valor/tm));
+  fmP=Math.round(fmP*1000)/1000||0;
+
+  const vo=asesor.varObj;
+  const bV=Math.round(vo*.7),bR=Math.round(vo*.3);
+  // Comp venta: blocked if <85% OR fmP=0 (all bolsas below min)
+  const cV=(!blocked&&ventas.length&&fmP>0)?Math.round(bV*fv*fmP):0;
+  // Comp recaudo: INDEPENDENT
+  const cR=recFactor!==null?Math.round(bR*recFactor):0;
+  const total=cV+cR;
+  const b4=ventas.filter(v=>v.bolsa===4).reduce((s,v)=>s+v.valor,0);
+
+  document.getElementById("blockedAlert").style.display=(blocked||(!blocked&&ventas.length&&fmP===0&&fv>0))?"block":"none";
+  const tv=document.getElementById("totalVal");
+  const showTotal=ventas.length||recFactor!==null;
+  tv.textContent=showTotal?fmt(total):"—";
+  tv.style.color=blocked?"#A32D2D":"#1A1A1A";
+  document.getElementById("kvVenta").textContent=ventas.length?fmt(cV):"—";
+  document.getElementById("kvRec").textContent=recFactor!==null?fmt(cR):"—";
+
+  const pctV=vo>0?Math.round((total/vo-1)*100):0;
+  document.getElementById("totalSub").textContent=
+    (ventas.length||recFactor!==null)?`${pctV>=0?"+":""}${pctV}% vs tu variable objetivo`:
+    "Registra tus ventas para calcular";
+
+  const rows=[
+    ["Variable objetivo",fmt(vo),""],
+    ["— Comp. Venta base (70%)",fmt(bV),""],
+    ["— Comp. Recaudo base (30%)",fmt(bR),"ind"],
+    ["","","sep"],
+    ["Total ventas registradas",fmt(totalVenta),""],
+    ["Cumplimiento "+Math.round(cumpl*10)/10+"% → Factor Venta",ventas.length?fv.toFixed(2):"—",""],
+    ["Factor Margen ponderado",ventas.length?(fmP>0?fmP.toFixed(3):"0 — No comisiona"):"—",""],
+    ["Comp. Venta = "+fmt(bV)+" × "+fv.toFixed(2)+" × "+(fmP>0?fmP.toFixed(3):"0"),cV?fmt(cV):"$0",""],
+    ["","","sep"],
+    ["Factor Oportunidad (recaudo)",recFactor!==null?recFactor.toFixed(4):"Pendiente","ind"],
+    ["Comp. Recaudo = "+fmt(bR)+" × "+(recFactor!==null?recFactor.toFixed(4):"?"),recFactor!==null?fmt(cR):"Pendiente","ind"],
+    ...(b4>0?[["Venta Bolsa 4 (bono aparte)",fmt(b4),""]]:[] ),
+    ["TOTAL VARIABLE ESTIMADO (*)",total?fmt(total):"—","last"],
+  ];
+  document.getElementById("breakdown").innerHTML=rows.map(([l,v,cls])=>{
+    if(cls==="sep") return'<div style="height:6px;margin:2px 0;border-top:0.5px solid #F0F0F0"></div>';
+    const isLast=cls==="last";const isInd=cls==="ind";
+    return`<div class="row${isLast?' breakdown-last':''}">
+      <span style="${isLast?'font-weight:500':'color:#888;font-size:13px'}${isInd?';color:#0C447C':''}">${l}${isInd?'<span class="ind-badge">Indep.</span>':''}</span>
+      <span class="row-val" style="${isLast?'color:#E8682A;font-size:16px':''}${isInd&&!isLast?';color:#0C447C':''}">${v}</span>
+    </div>`;
+  }).join('');
+}
+initLogin();
+</script>
+</body>
+</html>
